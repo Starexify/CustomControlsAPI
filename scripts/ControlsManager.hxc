@@ -20,7 +20,7 @@ class ControlsManager extends ScriptedModule {
   var justReleasedActions:ObjectMap<Int, FlxActionDigital> = new ObjectMap();
 
   function new() {
-    super("ControlsManager", Math.NEGATIVE_INFINITY);
+    super("ControlsManager", 2147482647);
     ControlsManager.instance = this;
   }
 
@@ -47,10 +47,6 @@ class ControlsManager extends ScriptedModule {
 
     inputPressQueue = [];
     inputReleaseQueue = [];
-    justPressedActions.clear();
-    pressedActions.clear();
-    justReleasedActions.clear();
-    releasedActions.clear();
 
     if (controlSlots == null || controlSlots.length <= 0) return;
 
@@ -148,12 +144,25 @@ class ControlsManager extends ScriptedModule {
     InputsUtil.log("Key binds refreshed!");
   }
 
+  // onDestroy is called twice after reloading in playstate for some reason so we do this
+  var destroyed = false;
   override public function onDestroy(event:ScriptEvent) {
-    cleanup();
+    if (destroyed) cleanup();
+    destroyed = true;
   }
 
   function cleanup() {
     // Clean up existing actions
+    if (pressedActions != null) {
+      for (action in pressedActions) if (action != null) action.destroy();
+      pressedActions.clear();
+    }
+
+    if (releasedActions != null) {
+      for (action in releasedActions) if (action != null) action.destroy();
+      releasedActions.clear();
+    }
+
     if (justPressedActions != null) {
       for (action in justPressedActions) if (action != null) action.destroy();
       justPressedActions.clear();

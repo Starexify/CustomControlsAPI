@@ -40,7 +40,7 @@ class ControlsAPI extends ScriptedModule {
   var prompt:Prompt;
 
   public function new() {
-    super("ControlsAPI", Math.POSITIVE_INFINITY);
+    super("ControlsAPI", 2147482647);
     ControlsAPI.instance = this;
   }
 

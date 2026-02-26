@@ -1,3 +1,5 @@
+using funkin.util.AnsiUtil;
+
 class InputsUtil {
   // Input States
   public static var JUST_RELEASED = -1;
@@ -12,5 +14,9 @@ class InputsUtil {
       case "PRESSED": PRESSED;
       case "JUSTPRESSED", "JUST_PRESSED": JUST_PRESSED;
     }
+  }
+
+  public static function log(message:String) {
+    trace(' CCAPI '.bold().bg_black() + ' ' + message);
   }
 }

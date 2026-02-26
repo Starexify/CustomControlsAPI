@@ -28,12 +28,12 @@ class ControlsManager extends ScriptedModule {
     initCustomInputs();
   }
 
-  public var callbacks:StringMap<Array<InputCallback>> = new StringMap();
+  public static var callbacks:StringMap<Array<InputCallback>> = new StringMap();
 
   public static function registerCallback(controlName:String, inputType:Int, callback:Int -> Void) {
-    if (!ControlsManager.instance.callbacks.exists(controlName)) ControlsManager.instance.callbacks.set(controlName, []);
-    ControlsManager.instance.callbacks.get(controlName).push({type: inputType, callback: callback});
-    trace("[CCAPI] Registered callback for " + controlName + " on input type " + inputType);
+    if (!callbacks.exists(controlName)) callbacks.set(controlName, []);
+    callbacks.get(controlName).push({type: inputType, callback: callback});
+    InputsUtil.log('Registered callback for $controlName on input type $inputType');
   }
 
   function executeCallbacks(controlName:String, inputType:Int, key:Int) {
@@ -56,9 +56,9 @@ class ControlsManager extends ScriptedModule {
 
     for (slot in controlSlots) {
       var keyName = slot.name;
-      var types = slot.inputTypes != null ? slot.inputTypes : [InputsUtil.JUST_RELEASED, InputsUtil.JUST_PRESSED];
+      var types = slot.inputTypes ?? [InputsUtil.JUST_RELEASED, InputsUtil.JUST_PRESSED];
 
-      trace("[CCAPI] Setting up " + keyName + " with types: " + types);
+      InputsUtil.log('Setting up $keyName with types: $types');
 
       for (type in types) {
         switch (type) {
@@ -78,16 +78,16 @@ class ControlsManager extends ScriptedModule {
       var pressAction = justPressedActions.get(key);
       var releaseAction = justReleasedActions.get(key);
 
-      if (pressAction != null && pressAction.check()) onKeyPress(key);
-      if (releaseAction != null && releaseAction.check()) onKeyRelease(key);
+      if (pressAction != null && pressAction.check() && FlxG.keys.checkStatus(key, InputsUtil.JUST_PRESSED)) onKeyPress(key);
+      if (releaseAction != null && releaseAction.check() && FlxG.keys.checkStatus(key, InputsUtil.JUST_RELEASED)) onKeyRelease(key);
     }
 
     for (key in pressedActions.keys()) {
       var pressAction = pressedActions.get(key);
       var releaseAction = releasedActions.get(key);
 
-      if (pressAction != null && pressAction.check()) onKeyHold(key);
-      if (releaseAction != null && releaseAction.check()) onKeyReleased(key);
+      if (pressAction != null && pressAction.check() && FlxG.keys.checkStatus(key, InputsUtil.PRESSED)) onKeyHold(key);
+      if (releaseAction != null && releaseAction.check() && FlxG.keys.checkStatus(key, InputsUtil.RELEASED)) onKeyReleased(key);
     }
   }
 
@@ -142,10 +142,10 @@ class ControlsManager extends ScriptedModule {
   }
 
   public function refreshKeyBinds() {
-    trace("[CCAPI] Refreshing key binds...");
+    InputsUtil.log("Refreshing key binds...");
     controlSlots = Save.instance.modOptions.get("customControls");
     initCustomInputs();
-    trace("[CCAPI] Key binds refreshed!");
+    InputsUtil.log("Key binds refreshed!");
   }
 
   override public function onDestroy(event:ScriptEvent) {

@@ -63,7 +63,7 @@ class ControlsAPI extends ScriptedModule {
   public function registerHeader(name:String, ?index:Int, ?centered:Bool, ?font:String):Int {
     for (i in 0...headerSlots.length) {
       if (headerSlots[i].name == name) {
-        trace("[CCAPI] Cannot register header '" + name + "' a header slot with the same name already exists.");
+        InputsUtil.log('Cannot register header \'$name\' a header slot with the same name already exists.');
         return i;
       }
     }
@@ -77,14 +77,14 @@ class ControlsAPI extends ScriptedModule {
 
     Save.instance.modOptions.set("customHeaders", headerSlots);
     Save.instance.flush();
-    trace("[CCAPI] Registered header " + name);
+    InputsUtil.log('Registered header $name');
     return headerSlots.length - 1;
   }
 
   public function registerKeybind(name:String, keys:Array<Int>, ?header:String, ?inputTypes:Array<String>, ?index:Int, ?spritePath:String):Int {
     for (i in 0...controlSlots.length) {
       if (controlSlots[i].name == name) {
-        trace("[CCAPI] Cannot register keybind '" + name + "' a control slot with the same name already exists.");
+        InputsUtil.log('Cannot register keybind \'$name\' a control slot with the same name already exists.');
         return i;
       }
     }
@@ -103,7 +103,7 @@ class ControlsAPI extends ScriptedModule {
 
     Save.instance.modOptions.set("customControls", controlSlots);
     Save.instance.flush();
-    trace("[CCAPI] Registered keybind " + name);
+    InputsUtil.log('Registered keybind $name');
     return controlSlots.length - 1;
   }
 
@@ -112,7 +112,7 @@ class ControlsAPI extends ScriptedModule {
 
     Save.instance.modOptions.set("customHeaders", headerSlots);
     Save.instance.flush();
-    trace("[CCAPI] Unregistered header " + name);
+    InputsUtil.log('Unregistered header $name');
     return headerSlots.length - 1;
   }
 
@@ -121,14 +121,14 @@ class ControlsAPI extends ScriptedModule {
 
     Save.instance.modOptions.set("customControls", controlSlots);
     Save.instance.flush();
-    trace("[CCAPI] Unregistered keybind " + name);
+    InputsUtil.log('Unregistered keybind $name');
     return controlSlots.length - 1;
   }
 
   public function removeBaseEntry(name:String, control:Control, ?storeKeys:Bool, ?device:Device) {
     for (i in 0...removedEntries.length) {
       if (removedEntries[i].name == name) {
-        trace("[CCAPI] Already removed base control entry '" + name + "'.");
+        InputsUtil.log('Already removed base control entry \'$name\'.');
         return i;
       }
     }
@@ -148,14 +148,14 @@ class ControlsAPI extends ScriptedModule {
     var data = {entries: removedEntries};
     FileUtilSandboxed.writeStringToPath(Assets.getPath("removedControls.json"), SerializerUtil.toJSON(data), FileWriteMode.Force);
 
-    trace("[CCAPI] Registered for removal " + name);
+    InputsUtil.log('Registered for removal $name');
     return removedEntries.length - 1;
   }
 
   public function readdBaseEntry(name:String, control:Control) {
     var entry = Lambda.find(removedEntries, e -> e.name == name);
     if (entry == null) {
-      trace("[CCAPI] No removed entry found for '" + name + "'.");
+      InputsUtil.log('No removed entry found for \'$name\'.');
       return;
     }
 
@@ -167,7 +167,7 @@ class ControlsAPI extends ScriptedModule {
     var data = {entries: removedEntries};
     FileUtilSandboxed.writeStringToPath(Assets.getPath("removedControls.json"), SerializerUtil.toJSON(data), FileWriteMode.Force);
 
-    trace("[CCAPI] Re-added base entry '" + name + "'.");
+    InputsUtil.log('Re-added base entry \'$name\'.');
   }
 
   // Controls Menu Replacement
@@ -197,9 +197,9 @@ class ControlsAPI extends ScriptedModule {
     slotToSprIndex = new IntMap();
     controlsMenu.add(controlSprites);
 
-    trace("[CCAPI] Adding extra headers: " + headerSlots);
-    trace("[CCAPI] Adding extra keybinds: " + controlSlots);
-    trace("[CCAPI] Removing entries: " + removedEntries);
+    InputsUtil.log('Adding extra headers: $headerSlots');
+    InputsUtil.log('Adding extra keybinds: $controlSlots');
+    InputsUtil.log('Removing entries: $removedEntries');
     buildControls(headers, keyBinds, labels);
 
     controlsMenu.controlGrid.onChange.removeAll();
